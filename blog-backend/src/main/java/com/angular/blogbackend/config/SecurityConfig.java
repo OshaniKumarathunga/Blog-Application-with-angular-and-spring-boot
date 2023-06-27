@@ -1,5 +1,6 @@
 package com.angular.blogbackend.config;
 
+import com.angular.blogbackend.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.net.PasswordAuthentication;
 
@@ -23,6 +25,11 @@ public class SecurityConfig  {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Bean
+    public JwtAuthenticationFilter authenticationJwtTokenFilter() {
+        return new JwtAuthenticationFilter();
+    }
 
     @Bean(BeanIds.AUTHENTICATION_MANAGER)
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfiguration) throws Exception {
@@ -38,6 +45,8 @@ public class SecurityConfig  {
                 );
 
         http.authenticationProvider(authenticationProvider());
+
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

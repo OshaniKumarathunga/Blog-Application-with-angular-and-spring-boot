@@ -3,6 +3,7 @@ package com.angular.blogbackend.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,7 @@ import java.time.Instant;
 
 @Getter
 @Setter
+@AllArgsConstructor
 @Entity
 @Table
 public class Post {
@@ -28,4 +30,7 @@ public class Post {
     @NotBlank
     private String UserName;
 
+    public Post() {
+
+    }
 }

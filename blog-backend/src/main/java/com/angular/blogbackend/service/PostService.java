@@ -7,6 +7,7 @@ import com.angular.blogbackend.repo.PostRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -22,14 +23,9 @@ public class PostService {
     @Autowired
     private PostRepo postRepo;
 
-    public void createPost(PostDto postDto){
-        Post post = new Post();
-        post.setTitle(postDto.getTitle());
-        post.setContent(postDto.getContent());
-        User username = authService.getCurrentUser().orElseThrow(()->
-                new IllegalArgumentException("No User logged in"));
-        post.setUserName(username.getUsername());
-        post.setCreatedOn(Instant.now());
+    @Transactional
+    public void createPost(PostDto postDto) {
+        Post post = mapFromDtoToPost(postDto);
         postRepo.save(post);
     }
 
@@ -47,8 +43,21 @@ public class PostService {
         return postDto;
     }
 
+    private Post mapFromDtoToPost(PostDto postDto) {
+        Post post = new Post();
+        post.setTitle(postDto.getTitle());
+        post.setContent(postDto.getContent());
+        User loggedInUser = authService.getCurrentUser().orElseThrow(() -> new IllegalArgumentException("User Not Found"));
+        post.setCreatedOn(Instant.now());
+        post.setUserName(loggedInUser.getUsername());
+        post.setUpdatedOn(Instant.now());
+        return post;
+    }
+
     public PostDto readSinglePost(Long id) {
         Post post = postRepo.findById(id).orElseThrow(() -> new PostNotFoundException("For id " + id));
         return mapFromPostToDto(post);
     }
+
+
 }

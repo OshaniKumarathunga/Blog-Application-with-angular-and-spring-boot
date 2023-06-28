@@ -48,10 +48,10 @@ public class AuthService {
         return jwtProvider.generateToken(authenticate);
     }
 
-
     public Optional<org.springframework.security.core.userdetails.User> getCurrentUser() {
         org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) SecurityContextHolder.
                 getContext().getAuthentication().getPrincipal();
         return Optional.of(principal);
     }
+
 }
